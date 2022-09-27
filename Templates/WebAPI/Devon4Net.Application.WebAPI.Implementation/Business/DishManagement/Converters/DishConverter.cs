@@ -86,7 +86,6 @@ namespace Devon4Net.Application.WebAPI.Implementation.Business.DishManagement.Co
                 Description = item.Description,
                 Name = item.Name,
                 Price = item.Price,
-                //ImageId = item.IdImage,
                 ModificationCounter = 0
             };
         }
