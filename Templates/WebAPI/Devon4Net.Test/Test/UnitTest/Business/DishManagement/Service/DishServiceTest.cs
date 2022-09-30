@@ -3,13 +3,14 @@ using System;
 using System.Collections.Generic;
 using Xunit;
 using Devon4Net.Application.WebAPI.Implementation.Business.DishManagement.Service;
-using Devon4Net.Domain.UnitOfWork.UnitOfWork;
 using Devon4Net.Application.WebAPI.Implementation.Domain.Database;
 using Devon4Net.Application.WebAPI.Implementation.Domain.Entities;
 using Devon4Net.Application.WebAPI.Implementation.Domain.RepositoryInterfaces;
 using System.Linq.Expressions;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
+using Devon4Net.Infrastructure.LiteDb.Repository;
+
 namespace Devon4Net.Test.xUnit.Test.UnitTest.Business
 {
     public class DishServiceTest : UnitTest
@@ -55,15 +56,14 @@ namespace Devon4Net.Test.xUnit.Test.UnitTest.Business
             //Arrange
             IList<Dish> dishList = buildListOfExampleDishes();
 
-            var uowMock = new Mock<IUnitOfWork<DishContext>>();
-            var dishRepositoryMock = new Mock<IDishRepository>();
-            dishRepositoryMock.Setup(
-                repository => repository.Get(null)).Returns(
-                    Task.FromResult(dishList)
-                );
-            uowMock.Setup(uow => uow.Repository<IDishRepository>()).Returns(dishRepositoryMock.Object);
+            var dishRepositoryMock = new Mock<ILiteDbRepository<Dish>>();
 
-            DishService dishService = new DishService(uowMock.Object);
+            dishRepositoryMock.Setup(
+                repository => repository.Get()).Returns(
+                    dishList
+                );
+            
+            DishService dishService = new DishService(dishRepositoryMock.Object);
             decimal maxPrice = 6;
             int minLikes = 0;
             string searchBy = "";
@@ -87,15 +87,16 @@ namespace Devon4Net.Test.xUnit.Test.UnitTest.Business
             //Arrange
             IList<Dish> dishList = buildListOfExampleDishes();
 
-            var uowMock = new Mock<IUnitOfWork<DishContext>>();
-            var dishRepositoryMock = new Mock<IDishRepository>();
-            dishRepositoryMock.Setup(
-                repository => repository.Get(null)).Returns(
-                    Task.FromResult(dishList)
-                );
-            uowMock.Setup(uow => uow.Repository<IDishRepository>()).Returns(dishRepositoryMock.Object);
 
-            DishService dishService = new DishService(uowMock.Object);
+            var dishRepositoryMock = new Mock<ILiteDbRepository<Dish>>();
+
+            dishRepositoryMock.Setup(
+                repository => repository.Get()).Returns(
+                    dishList
+                );
+            
+            DishService dishService = new DishService(dishRepositoryMock.Object);
+
             decimal maxPrice = 0;
             int minLikes = 0;
             string searchBy = "";
@@ -119,16 +120,16 @@ namespace Devon4Net.Test.xUnit.Test.UnitTest.Business
             //Arrange
             IList<Dish> dishList = buildListOfExampleDishes();
 
-            var uowMock = new Mock<IUnitOfWork<DishContext>>();
-            var dishRepositoryMock = new Mock<IDishRepository>();
-            dishRepositoryMock.Setup(
-                repository => repository.Get(null
-                )).Returns(
-                    Task.FromResult(dishList)
-                );
-            uowMock.Setup(uow => uow.Repository<IDishRepository>()).Returns(dishRepositoryMock.Object);
 
-            DishService dishService = new DishService(uowMock.Object);
+            var dishRepositoryMock = new Mock<ILiteDbRepository<Dish>>();
+
+            dishRepositoryMock.Setup(
+                repository => repository.Get()).Returns(
+                    dishList
+                );
+            
+            DishService dishService = new DishService(dishRepositoryMock.Object);
+
             decimal maxPrice = 0;
             int minLikes = 0;
             string searchBy = "salad";
@@ -145,38 +146,34 @@ namespace Devon4Net.Test.xUnit.Test.UnitTest.Business
             //Assert
             Assert.Equal(expectedResult, result);
         }
+
         [Fact]
         public async void getDishByIdTest()
         {
             //Arrange
-            long searchedId = 1;
+            long queriedId = 1;
 
             Dish dish = new Dish();
+            dish.Id = queriedId;
             dish.Name = "falafel";
             dish.Price = 6;
 
-            var uowMock = new Mock<IUnitOfWork<DishContext>>();
-            var dishRepositoryMock = new Mock<IDishRepository>();
-            dishRepositoryMock.Setup(
-                repository => repository.GetDishById(
-                    It.IsAny<long>()
-                )).Returns(
-                    Task.FromResult(dish)
-                );
-            uowMock.Setup(uow => uow.Repository<IDishRepository>()).Returns(dishRepositoryMock.Object);
+            var dishRepositoryMock = new Mock<ILiteDbRepository<Dish>>();
 
-            DishService dishService = new DishService(uowMock.Object);
+            dishRepositoryMock.Setup(repository => repository.GetFirstOrDefault(It.IsAny<LiteDB.BsonExpression>())).Returns(dish);
+            
+            DishService dishService = new DishService(dishRepositoryMock.Object);
 
             //Act
-            var result = await dishService.GetDishById(searchedId);
+            var result = await dishService.GetDishById(queriedId);
 
             //Assert
-            dishRepositoryMock.Verify(s => s.GetDishById(
-                    It.IsAny<long>()
+            dishRepositoryMock.Verify(s => s.GetFirstOrDefault(
+                    It.IsAny<LiteDB.BsonExpression>()
                     ),
                     Times.Once());
-            Assert.Equal(dish, result);
 
+            Assert.Equal(dish, result);
         }
     }
 }

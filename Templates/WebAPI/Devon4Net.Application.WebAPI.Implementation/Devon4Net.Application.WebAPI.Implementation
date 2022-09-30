@@ -640,22 +640,6 @@
             <param name="id"></param>
             <returns></returns>
         </member>
-        <member name="T:Devon4Net.Application.WebAPI.Implementation.Domain.Database.DishContext">
-            <summary>
-            Context definition
-            </summary>
-        </member>
-        <member name="M:Devon4Net.Application.WebAPI.Implementation.Domain.Database.DishContext.#ctor(Microsoft.EntityFrameworkCore.DbContextOptions{Devon4Net.Application.WebAPI.Implementation.Domain.Database.DishContext})">
-            <summary>
-            Constructor
-            </summary>
-            <param name="options"></param>
-        </member>
-        <member name="P:Devon4Net.Application.WebAPI.Implementation.Domain.Database.DishContext.Dishes">
-            <summary>
-            Dbset
-            </summary>
-        </member>
         <member name="T:Devon4Net.Application.WebAPI.Implementation.Domain.Database.TodoContext">
             <summary>
             Context definition
