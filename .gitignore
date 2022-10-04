@@ -1,0 +1,13 @@
+**/bin
+**/*.dll
+*.log
+obj
+bin
+logs
+
+FrontEnd/node_modules
+FrontEnd/dist
+
+.vs
+
+CodeCoverage/test_result
